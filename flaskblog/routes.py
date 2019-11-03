@@ -1,9 +1,15 @@
-from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm, LoginForm
+from flask import render_template, url_for, flash, redirect
+from flaskblog import APP
+from flaskblog.forms import RegistrationForm, LoginForm
+from flaskblog.models import User, Post
 
-APP = Flask(__name__)
-APP.config['SECRET_KEY'] = 'c653233b9d1669785d0360758cfc01e0'
-
+'''
+python >>>
+>>> from flaskblog import DB
+>>> from flaskblog.models import User, Post
+>>> DB.create_all()
+>>> User.query.all() -> return []
+'''
 # temp data
 POSTS = [
     {
@@ -50,7 +56,3 @@ def login():
     else:
         flash('Invalid username or password!', 'danger')
     return render_template('login.html', title='Login', form=form)
-
-
-if __name__ == '__main__':
-    APP.run(debug=True)
