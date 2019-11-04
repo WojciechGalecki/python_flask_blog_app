@@ -126,3 +126,6 @@ dmypy.json
 
 # PyCharm
 .idea
+
+# Project
+/flaskblog/static/profile_pics
