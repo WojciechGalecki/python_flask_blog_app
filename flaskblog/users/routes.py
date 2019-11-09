@@ -2,6 +2,7 @@ from flask import Blueprint, flash, render_template, url_for, redirect, request
 from flask_login import current_user, logout_user, login_user, login_required
 
 from flaskblog import bcrypt, db
+from flaskblog.logger import logger
 from flaskblog.models import User, Post
 from flaskblog.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
 from flaskblog.users.utils import save_picture, send_reset_email, save_valid_user
@@ -16,7 +17,9 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         save_valid_user(form)
-        flash(f'Successfully created account for {form.username.data}!', 'success')
+        new_user = form.username.data
+        logger.info(f'Registered new user: {new_user}')
+        flash(f'Successfully created account for {new_user}!', 'success')
         return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -31,6 +34,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
+            logger.info(f'Logged user: {user.username}')
             return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
             flash('Invalid email or password!', 'danger')
@@ -55,6 +59,7 @@ def account():
         current_user.email = form.email.data
         db.session.commit()
         flash('Successfully Updated Account!', 'success')
+        logger.info(f'Updated account for user: {current_user.username}')
         return redirect(url_for('users.account'))
     elif request.method == 'GET':
         form.username.data = current_user.username
@@ -82,6 +87,7 @@ def reset_request():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
+        logger.info(f'Email with password reset token was send to user: {user.username}')
         flash('An email has been sent with instructions to reset your password.', 'info')
         return redirect(url_for('users.login'))
     return render_template('reset_request.html', title='Reset Password', form=form)
@@ -100,6 +106,7 @@ def reset_token(token):
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user.password = hashed_password
         db.session.commit()
+        logger.info(f'Password changed for user: {user}')
         flash(f'Your password has been updated', 'success')
         return redirect(url_for('users.login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
