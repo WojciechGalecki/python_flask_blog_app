@@ -3,7 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
-from flaskblog.config import DevConfig
+from flaskblog.config import ProdConfig
 from flask_migrate import Migrate
 
 db = SQLAlchemy()
@@ -14,7 +14,7 @@ login_manager.login_message_category = 'info'
 mail = Mail()
 
 
-def create_app(config_class=DevConfig):
+def create_app(config_class=ProdConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
 

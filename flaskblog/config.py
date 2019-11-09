@@ -3,12 +3,6 @@ import os
 
 class Config:
     SECRET_KEY = os.environ.get('FLASKBLOG_SECRET_KEY')
-    DB_USER = os.environ.get('FLASKBLOG_DATABASE_USER')
-    DB_PASSWORD = os.environ.get('FLASKBLOG_DATABASE_PASSWORD')
-    DB_HOST = os.environ.get('FLASKBLOG_DATABASE_HOST')
-    DB_DATABASE = os.environ.get('FLASKBLOG_DATABASE')
-    DB_PORT = 5432
-    SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_DATABASE}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
@@ -19,8 +13,14 @@ class Config:
 
 class DevConfig(Config):
     DEBUG = True
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
+    DB_USER = os.environ.get('FLASKBLOG_DATABASE_USER')
+    DB_PASSWORD = os.environ.get('FLASKBLOG_DATABASE_PASSWORD')
+    DB_HOST = os.environ.get('FLASKBLOG_DATABASE_HOST')
+    DB_DATABASE = os.environ.get('FLASKBLOG_DATABASE')
+    DB_PORT = 5432
+    SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_DATABASE}'
 
 
 class ProdConfig(Config):
     DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
