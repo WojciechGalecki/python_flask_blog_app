@@ -129,3 +129,4 @@ dmypy.json
 
 # Project
 /flaskblog/static/profile_pics
+/docker/db-data
