@@ -5,6 +5,7 @@ from flaskblog import db
 from flaskblog.models import Post
 from flaskblog.posts.forms import PostForm
 from flaskblog.logger import logger
+from datetime import date
 
 posts = Blueprint('posts', __name__)
 
@@ -18,7 +19,7 @@ def new_post():
         flash('Successfully created new post!', 'success')
         logger.info(f'Added new post {form.title} by user: {current_user}')
         return redirect(url_for('main.home'))
-    return render_template('create_post.html', title='New Post', form=form, legend='New Post')
+    return render_template('create_post.html', title='New Post', form=form, legend='New Post', today=date.today())
 
 
 def save_valid_post(form):
@@ -30,7 +31,7 @@ def save_valid_post(form):
 @posts.route("/post/<int:post_id>")
 def post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('post.html', title=post.title, post=post)
+    return render_template('post.html', title=post.title, post=post, today=date.today())
 
 
 @posts.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
@@ -50,7 +51,7 @@ def update_post(post_id):
     elif request.method == 'GET':
         form.title.data = post.title
         form.content.data = post.content
-    return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
+    return render_template('create_post.html', title='Update Post', form=form, legend='Update Post', today=date.today())
 
 
 @posts.route("/post/<int:post_id>/delete", methods=['POST'])

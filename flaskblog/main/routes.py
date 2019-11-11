@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request
 
 from flaskblog.models import Post
+from datetime import date
 
 main = Blueprint('main', __name__)
 
@@ -12,9 +13,9 @@ def home():
     posts = Post.query \
         .order_by(Post.date_posted.desc()) \
         .paginate(page=page, per_page=5)
-    return render_template('home.html', posts=posts)
+    return render_template('home.html', posts=posts, today=date.today())
 
 
 @main.route("/about")
 def about():
-    return render_template('about.html', title='About')
+    return render_template('about.html', title='About', today=date.today())

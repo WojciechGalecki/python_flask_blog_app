@@ -6,6 +6,7 @@ from flaskblog.logger import logger
 from flaskblog.models import User, Post
 from flaskblog.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
 from flaskblog.users.utils import save_picture, send_reset_email, save_valid_user
+from datetime import date
 
 users = Blueprint('users', __name__)
 
@@ -21,7 +22,7 @@ def register():
         logger.info(f'Registered new user: {new_user}')
         flash(f'Successfully created account for {new_user}!', 'success')
         return redirect(url_for('users.login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Register', form=form, today=date.today())
 
 
 @users.route("/login", methods=['GET', 'POST'])
@@ -38,7 +39,7 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
             flash('Invalid email or password!', 'danger')
-    return render_template('login.html', title='Login', form=form)
+    return render_template('login.html', title='Login', form=form, today=date.today())
 
 
 @users.route("/logout")
@@ -65,7 +66,7 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    return render_template('account.html', title='Account', image_file=image_file, form=form)
+    return render_template('account.html', title='Account', image_file=image_file, form=form, today=date.today())
 
 
 @users.route("/user/<string:username>")
@@ -76,7 +77,7 @@ def user_posts(username):
         .filter_by(author=user) \
         .order_by(Post.date_posted.desc()) \
         .paginate(page=page, per_page=5)
-    return render_template('user_posts.html', posts=posts, user=user)
+    return render_template('user_posts.html', posts=posts, user=user, today=date.today())
 
 
 @users.route("/reset_password", methods=['GET', 'POST'])
@@ -90,7 +91,7 @@ def reset_request():
         logger.info(f'Email with password reset token was send to user: {user.username}')
         flash('An email has been sent with instructions to reset your password.', 'info')
         return redirect(url_for('users.login'))
-    return render_template('reset_request.html', title='Reset Password', form=form)
+    return render_template('reset_request.html', title='Reset Password', form=form, today=date.today())
 
 
 @users.route("/reset_password/<token>", methods=['GET', 'POST'])
@@ -109,4 +110,4 @@ def reset_token(token):
         logger.info(f'Password changed for user: {user}')
         flash(f'Your password has been updated', 'success')
         return redirect(url_for('users.login'))
-    return render_template('reset_token.html', title='Reset Password', form=form)
+    return render_template('reset_token.html', title='Reset Password', form=form, today=date.today())
